@@ -48,7 +48,7 @@ class CircularBokeh: CIFilter, VImageFilter
     
     private var probe: [UInt8]?
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
             kCIAttributeFilterDisplayName: "Circular Bokeh",
@@ -170,7 +170,7 @@ class HistogramEqualization: CIFilter, VImageFilter
 {
     var inputImage: CIImage?
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
             kCIAttributeFilterDisplayName: "Histogram Equalization",
@@ -243,7 +243,7 @@ class EndsInContrastStretch: CIFilter, VImageFilter
     var inputPercentHiGreen: CGFloat = 0
     var inputPercentHiBlue: CGFloat = 0
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
             kCIAttributeFilterDisplayName: "Ends In Contrast Stretch",
@@ -366,7 +366,7 @@ class ContrastStretch: CIFilter, VImageFilter
 {
     var inputImage: CIImage?
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
             kCIAttributeFilterDisplayName: "Contrast Stretch",
@@ -431,7 +431,7 @@ class HistogramSpecification: CIFilter, VImageFilter
     var inputImage: CIImage?
     var inputHistogramSource: CIImage?
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
             kCIAttributeFilterDisplayName: "Histogram Specification",
@@ -471,14 +471,14 @@ class HistogramSpecification: CIFilter, VImageFilter
         let green = [UInt](repeating: 0, count: 256)
         let blue = [UInt](repeating: 0, count: 256)
         
-        let alphaMutablePointer = UnsafeMutablePointer<vImagePixelCount>(alpha)
-        let redMutablePointer = UnsafeMutablePointer<vImagePixelCount>(red)
-        let greenMutablePointer = UnsafeMutablePointer<vImagePixelCount>(green)
-        let blueMutablePointer = UnsafeMutablePointer<vImagePixelCount>(blue)
+        let alphaPtr = UnsafeMutablePointer<vImagePixelCount>(mutating: alpha) as UnsafeMutablePointer<vImagePixelCount>?
+        let redPtr = UnsafeMutablePointer<vImagePixelCount>(mutating: red) as UnsafeMutablePointer<vImagePixelCount>?
+        let greenPtr = UnsafeMutablePointer<vImagePixelCount>(mutating: green) as UnsafeMutablePointer<vImagePixelCount>?
+        let bluePtr = UnsafeMutablePointer<vImagePixelCount>(mutating: blue) as UnsafeMutablePointer<vImagePixelCount>?
         
-        let rgba = [redMutablePointer, greenMutablePointer, blueMutablePointer, alphaMutablePointer]
+        let rgba = [redPtr, greenPtr, bluePtr, alphaPtr]
         
-        let histogram = UnsafeMutablePointer<UnsafeMutablePointer<vImagePixelCount>?>(rgba)
+        let histogram = UnsafeMutablePointer<UnsafeMutablePointer<vImagePixelCount>?>(mutating: rgba)
         
         vImageHistogramCalculation_ARGB8888(&histogramSourceBuffer, histogram, UInt32(kvImageNoFlags))
         
@@ -495,7 +495,7 @@ class HistogramSpecification: CIFilter, VImageFilter
         let greenPointer = UnsafePointer<vImagePixelCount>(green)
         let bluePointer = UnsafePointer<vImagePixelCount>(blue)
         
-        let rgbaMutablePointer = UnsafeMutablePointer<UnsafePointer<vImagePixelCount>?>([redPointer, greenPointer, bluePointer, alphaPointer])
+        let rgbaMutablePointer = UnsafeMutablePointer<UnsafePointer<vImagePixelCount>?>(mutating: [redPointer, greenPointer, bluePointer, alphaPointer])
         
         vImageHistogramSpecification_ARGB8888(&imageBuffer, &outBuffer, rgbaMutablePointer, UInt32(kvImageNoFlags))
         

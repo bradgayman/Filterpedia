@@ -44,7 +44,7 @@ class MaskedVariableCircularBokeh: CIFilter
     var inputMaxBokehRadius: CGFloat = 20
     var inputBlurRadius: CGFloat = 2
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
             kCIAttributeFilterDisplayName: displayName(),
