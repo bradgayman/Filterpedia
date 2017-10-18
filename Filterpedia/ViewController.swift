@@ -10,8 +10,8 @@ import UIKit
 
 class ViewController: UIViewController
 {
-    let filterNavigator = FilterNavigator()
-    let filterDetail = FilterDetail()
+    @objc let filterNavigator = FilterNavigator()
+    @objc let filterDetail = FilterDetail()
     
     override func viewDidLoad()
     {
@@ -39,7 +39,7 @@ class ViewController: UIViewController
 
 extension ViewController: FilterNavigatorDelegate
 {
-    func filterNavigator(_ filterNavigator: FilterNavigator, didSelectFilterName: String)
+    @objc func filterNavigator(_ filterNavigator: FilterNavigator, didSelectFilterName: String)
     {
         filterDetail.filterName = didSelectFilterName
     }

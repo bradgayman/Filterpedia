@@ -22,12 +22,12 @@ import UIKit
 
 class LabelledSlider: UIControl
 {
-    let minValueLabel = UILabel()
-    let maxValueLabel = UILabel()
+    @objc let minValueLabel = UILabel()
+    @objc let maxValueLabel = UILabel()
     
-    let slider = UISlider()
+    @objc let slider = UISlider()
     
-    var max: Float = 0
+    @objc var max: Float = 0
     {
         didSet
         {
@@ -36,7 +36,7 @@ class LabelledSlider: UIControl
         }
     }
     
-    var min: Float = 0
+    @objc var min: Float = 0
     {
         didSet
         {
@@ -45,7 +45,7 @@ class LabelledSlider: UIControl
         }
     }
     
-    var value: Float = 0
+    @objc var value: Float = 0
     {
         didSet
         {
@@ -72,7 +72,7 @@ class LabelledSlider: UIControl
         fatalError("init(coder:) has not been implemented")
     }
     
-    func sliderChangeHandler()
+    @objc func sliderChangeHandler()
     {
         value = slider.value
 

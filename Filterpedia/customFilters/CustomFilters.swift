@@ -725,7 +725,7 @@ class PseudoColor: CIFilter
         ]
     }
     
-    let pseudoColorKernel = CIColorKernel(string:
+    let pseudoColorKernel = CIColorKernel(source:
         "vec4 getColor(vec4 color0, vec4 color1, float edge0, float edge1, float luma, float smoothness) \n" +
         "{ \n" +
         "   vec4 smoothColor = color0 + ((color1 - color0) * smoothstep(edge0, edge1, luma)); \n" +
@@ -762,7 +762,7 @@ class PseudoColor: CIFilter
         let extent = inputImage.extent
         let arguments: [Any] = [inputImage, inputSmoothness, inputColor0, inputColor1, inputColor2, inputColor3, inputColor4]
         
-        return pseudoColorKernel.apply(withExtent: extent, arguments: arguments)
+        return pseudoColorKernel.apply(extent: extent, arguments: arguments)
     }
 }
 
@@ -834,11 +834,11 @@ override var attributes: [String : Any]
         
         let finalImage = inputImage
             .applyingFilter("CIVignette",
-                withInputParameters: [
+                            parameters: [
                     kCIInputIntensityKey: inputVignetteIntensity,
                     kCIInputRadiusKey: inputVignetteRadius])
             .applyingFilter("CISepiaTone",
-                withInputParameters: [
+                            parameters: [
                     kCIInputIntensityKey: inputSepiaToneIntensity])
         
         return finalImage
@@ -891,16 +891,16 @@ class DifferenceOfGaussians: CIFilter
         }
         
         let blurred0 = DifferenceOfGaussians.gaussianBlurWithSigma(inputSigma0, image: inputImage)
-            .cropping(to: inputImage.extent)
+            .cropped(to: inputImage.extent)
         let blurred1 = DifferenceOfGaussians.gaussianBlurWithSigma(inputSigma1, image: inputImage)
-            .cropping(to: inputImage.extent)
+            .cropped(to: inputImage.extent)
 
         return blurred0
             .applyingFilter("CISubtractBlendMode",
-                withInputParameters: ["inputBackgroundImage": blurred1])
+                            parameters: ["inputBackgroundImage": blurred1])
             .applyingFilter("CIColorMatrix",
-                withInputParameters: ["inputBiasVector": CIVector(x: 0, y: 0, z: 0, w: 1)])
-            .cropping(to: inputImage.extent)
+                            parameters: ["inputBiasVector": CIVector(x: 0, y: 0, z: 0, w: 1)])
+            .cropped(to: inputImage.extent)
     }
     
     static func gaussianBlurWithSigma(_ sigma: CGFloat, image: CIImage) -> CIImage
@@ -1023,12 +1023,12 @@ class StarBurstFilter: CIFilter
             let angle = CGFloat((Double.pi / Double(inputBeamCount)) * Double(i))
             
             let starburst = thresholdImage.applyingFilter("CIMotionBlur",
-                    withInputParameters: [
+                                                          parameters: [
                         kCIInputRadiusKey: inputRadius,
                         kCIInputAngleKey: inputAngle + angle])
-                .cropping(to: thresholdImage.extent)
+                .cropped(to: thresholdImage.extent)
                 .applyingFilter("CIAdditionCompositing",
-                    withInputParameters: [
+                                parameters: [
                         kCIInputBackgroundImageKey: (starBurstAccumulator?.image())!])
             
             starBurstAccumulator?.setImage(starburst)
@@ -1036,10 +1036,10 @@ class StarBurstFilter: CIFilter
         
         let adjustedStarBurst = starBurstAccumulator?.image()
             .applyingFilter("CIColorControls",
-                withInputParameters: [kCIInputBrightnessKey: inputStarburstBrightness])
+                            parameters: [kCIInputBrightnessKey: inputStarburstBrightness])
 
         let final = inputImage.applyingFilter("CIAdditionCompositing",
-            withInputParameters: [kCIInputBackgroundImageKey: adjustedStarBurst!])
+                                              parameters: [kCIInputBackgroundImageKey: adjustedStarBurst!])
         
         return final
     }
@@ -1063,7 +1063,7 @@ class ThresholdToAlphaFilter: ThresholdFilter
     {
         super.init()
         
-        thresholdKernel = CIColorKernel(string:
+        thresholdKernel = CIColorKernel(source:
             "kernel vec4 thresholdFilter(__sample image, float threshold)" +
             "{" +
             "   float luma = dot(image.rgb, vec3(0.2126, 0.7152, 0.0722));" +
@@ -1133,7 +1133,7 @@ class AdvancedMonochrome: CIFilter
         ]
     }
     
-    let kernel = CIColorKernel(string:
+    let kernel = CIColorKernel(source:
         "kernel vec4 advancedMonochrome(__sample pixel, float redBalance, float greenBalance, float blueBalance, float clamp)" +
         "{" +
         "   float scale = 1.0 / (redBalance + greenBalance + blueBalance);" +
@@ -1160,7 +1160,7 @@ class AdvancedMonochrome: CIFilter
         let extent = inputImage.extent
         let arguments: [Any] = [inputImage, inputRedBalance, inputGreenBalance, inputBlueBalance, inputClamp]
         
-        return kernel.apply(withExtent: extent, arguments: arguments)
+        return kernel.apply(extent: extent, arguments: arguments)
     }
 }
 
@@ -1199,7 +1199,7 @@ class SmoothThreshold: CIFilter
         ]
     }
     
-    let colorKernel = CIColorKernel(string:
+    let colorKernel = CIColorKernel(source:
         "kernel vec4 color(__sample pixel, float inputEdgeO, float inputEdge1)" +
             "{" +
             "    float luma = dot(pixel.rgb, vec3(0.2126, 0.7152, 0.0722));" +
@@ -1221,7 +1221,7 @@ class SmoothThreshold: CIFilter
                          min(inputEdgeO, inputEdge1),
                          max(inputEdgeO, inputEdge1),]
         
-        return colorKernel.apply(withExtent: extent,
+        return colorKernel.apply(extent: extent,
                                            arguments: arguments)
     }
 }
@@ -1261,7 +1261,7 @@ class ThresholdFilter: CIFilter
     {
         super.init()
         
-        thresholdKernel = CIColorKernel(string:
+        thresholdKernel = CIColorKernel(source:
         "kernel vec4 thresholdFilter(__sample image, float threshold)" +
         "{" +
         "   float luma = dot(image.rgb, vec3(0.2126, 0.7152, 0.0722));" +
@@ -1290,7 +1290,7 @@ class ThresholdFilter: CIFilter
         let extent = inputImage.extent
         let arguments: [Any] = [inputImage, inputThreshold]
         
-        return thresholdKernel.apply(withExtent: extent, arguments: arguments)
+        return thresholdKernel.apply(extent: extent, arguments: arguments)
     }
 }
 
@@ -1347,7 +1347,7 @@ class PolarPixellate: CIFilter
         inputCenter = CIVector(x: 320, y: 320)
     }
     
-    let warpKernel = CIWarpKernel(string:
+    let warpKernel = CIWarpKernel(source:
         "kernel vec2 polarPixellate(vec2 center, vec2 pixelSize)" +
         "{" +
         " vec2 normCoord = 2.0 * destCoord() - 1.0;" +
@@ -1371,13 +1371,13 @@ class PolarPixellate: CIFilter
             let extent = inputImage.extent
             let pixelSize = CIVector(x: inputPixelLength, y: inputPixelArc)
             
-            return kernel.apply(withExtent: extent,
-                roiCallback:
+            return kernel.apply(extent: extent,
+                                roiCallback:
                 {
                     (index, rect) in
                     return rect
-                },
-                inputImage: inputImage,
+            },
+                                image: inputImage,
                 arguments: [inputCenter, pixelSize])
         }
         return nil
@@ -1443,14 +1443,14 @@ class VignetteNoirFilter: CIFilter
         }
         
         let mask = CIImage(color: CIColor(red: 1, green: 1, blue: 1))
-            .cropping(to: inputImage.extent)
-            .applyingFilter("CIVignette", withInputParameters: [
+            .cropped(to: inputImage.extent)
+            .applyingFilter("CIVignette", parameters: [
                 kCIInputRadiusKey: inputRadius,
                 kCIInputIntensityKey: inputIntensity])
         
         let noir = inputImage
-            .applyingFilter("CIPhotoEffectNoir",withInputParameters: nil)
-            .applyingFilter("CIColorControls", withInputParameters: [
+            .applyingFilter("CIPhotoEffectNoir",parameters: [:])
+            .applyingFilter("CIColorControls", parameters: [
                 kCIInputBrightnessKey: inputEdgeBrightness])
         
         let blendWithMaskFilter = CIFilter(name: "CIBlendWithMask", withInputParameters: [
@@ -1491,7 +1491,7 @@ class NormalMapFilter: CIFilter
         ]
     }
     
-    let normalMapKernel = CIKernel(string:
+    let normalMapKernel = CIKernel(source:
         "float lumaAtOffset(sampler source, vec2 origin, vec2 offset)" +
         "{" +
         " vec3 pixel = sample(source, samplerTransform(source, origin + offset)).rgb;" +
@@ -1525,14 +1525,14 @@ class NormalMapFilter: CIFilter
             return nil
         }
         
-        return normalMapKernel.apply(withExtent: inputImage.extent,
+        return normalMapKernel.apply(extent: inputImage.extent,
             roiCallback:
             {
                 (index, rect) in
                 return rect
             },
             arguments: [inputImage])?
-            .applyingFilter("CIColorControls", withInputParameters: [kCIInputContrastKey: inputContrast])
+            .applyingFilter("CIColorControls", parameters: [kCIInputContrastKey: inputContrast])
     }
 }
 

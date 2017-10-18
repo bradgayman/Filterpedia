@@ -23,14 +23,14 @@ import UIKit
 
 class FilterInputItemRenderer: UITableViewCell
 {
-    let textEditButton = UIButton()
-    let slider = LabelledSlider()
-    let vectorSlider = VectorSlider()
-    let imagesSegmentedControl = UISegmentedControl(items: assetLabels)
+    @objc let textEditButton = UIButton()
+    @objc let slider = LabelledSlider()
+    @objc let vectorSlider = VectorSlider()
+    @objc let imagesSegmentedControl = UISegmentedControl(items: assetLabels)
     
-    let titleLabel = UILabel()
+    @objc let titleLabel = UILabel()
     
-    let shapeLayer: CAShapeLayer =
+    @objc let shapeLayer: CAShapeLayer =
     {
         let layer = CAShapeLayer()
         
@@ -41,7 +41,7 @@ class FilterInputItemRenderer: UITableViewCell
         return layer
     }()
     
-    let descriptionLabel: UILabel =
+    @objc let descriptionLabel: UILabel =
     {
         let label = UILabel()
         
@@ -51,7 +51,7 @@ class FilterInputItemRenderer: UITableViewCell
         return label
     }()
     
-    let stackView: UIStackView =
+    @objc let stackView: UIStackView =
     {
         let stackView = UIStackView()
         
@@ -61,7 +61,7 @@ class FilterInputItemRenderer: UITableViewCell
     }()
     
     weak var delegate: FilterInputItemRendererDelegate?
-    private(set) var inputKey: String = ""
+    @objc private(set) var inputKey: String = ""
     
     var detail: (inputKey: String, attribute: [String : Any], filterParameterValues: [String: Any]) = ("", [String: Any](), [String: Any]())
     {
@@ -95,7 +95,7 @@ class FilterInputItemRenderer: UITableViewCell
  
     private(set) var value: Any?
     {
-        didSet
+         didSet
         {
             delegate?.filterInputItemRenderer(self, didChangeValue: value, forKey: inputKey)
             
@@ -149,12 +149,12 @@ class FilterInputItemRenderer: UITableViewCell
     
     // MARK: Change handlers
     
-    func sliderChangeHandler()
+    @objc func sliderChangeHandler()
     {
         value = slider.value
     }
     
-    func vectorSliderChangeHandler()
+    @objc func vectorSliderChangeHandler()
     {
         guard let attributeType = attribute[kCIAttributeClass] as? String,
             let vector = vectorSlider.vector else
@@ -175,12 +175,12 @@ class FilterInputItemRenderer: UITableViewCell
         }
     }
     
-    func imagesSegmentedControlChangeHandler()
+    @objc func imagesSegmentedControlChangeHandler()
     {
         value = assets[imagesSegmentedControl.selectedSegmentIndex].ciImage
     }
     
-    func textEditClicked()
+    @objc func textEditClicked()
     {
         guard let rootController = UIApplication.shared.keyWindow!.rootViewController else
         {
@@ -218,7 +218,7 @@ class FilterInputItemRenderer: UITableViewCell
     
     // MARK: Update user interface for attributes
     
-    func updateForAttribute()
+    @objc func updateForAttribute()
     {
         guard let attributeType = attribute[kCIAttributeClass] as? String else
         {
